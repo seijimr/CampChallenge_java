@@ -20,3 +20,4 @@ ArrayList profile(){
     out.print(list.get(i) + "<br>");
     }
 %>
+
