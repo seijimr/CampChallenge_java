@@ -10,6 +10,6 @@
     <body>
         エラーが発生しました。以下の項目を確認してください。<br>
         <%=request.getAttribute("error")%>
-        <%=JumsHelper.getInstance().home()%>
+        <br><%=JumsHelper.getInstance().home()%>
     </body>
 </html>

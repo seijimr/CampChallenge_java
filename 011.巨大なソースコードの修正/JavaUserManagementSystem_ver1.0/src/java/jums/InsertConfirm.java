@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * insertconfirm.jspと対応するサーブレット
- * フォーム入力された情報はここでセッションに格納し、以降持ちまわることになる
+ * insertconfirm.jspと対応するサーブレット フォーム入力された情報はここでセッションに格納し、以降持ちまわることになる
  * 直接アクセスした場合はerror.jspに振り分け
+ *
  * @author hayashi-s
  */
 public class InsertConfirm extends HttpServlet {
@@ -26,39 +26,43 @@ public class InsertConfirm extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try{
+        try {
             HttpSession session = request.getSession();
             request.setCharacterEncoding("UTF-8");//セッションに格納する文字コードをUTF-8に変更
             String accesschk = request.getParameter("ac");
-            if(accesschk ==null || (Integer)session.getAttribute("ac")!=Integer.parseInt(accesschk)){
+            if (accesschk == null || (Integer) session.getAttribute("ac") != Integer.parseInt(accesschk)) {
                 throw new Exception("不正なアクセスです");
             }
-            
+
             //フォームからの入力を取得
-            String name = request.getParameter("name");
-            String year = request.getParameter("year");
-            String month = request.getParameter("month");
-            String day = request.getParameter("day");
-            String type = request.getParameter("type");
-            String tell = request.getParameter("tell");
-            String comment = request.getParameter("comment");
+            UserDataBeans data = new UserDataBeans();
+            data.setName(request.getParameter("name"));
+            data.setYear(Integer.parseInt(request.getParameter("year")));
+            data.setMonth(Integer.parseInt(request.getParameter("month")));
+            data.setDay(Integer.parseInt(request.getParameter("day")));
+            data.setType(request.getParameter("type"));
+            data.setTell(request.getParameter("tell"));
+            data.setComment(request.getParameter("comment"));
 
             //セッションに格納
-            session.setAttribute("name", name);
-            session.setAttribute("year", year);
-            session.setAttribute("month",month);
-            session.setAttribute("day", day);
-            session.setAttribute("type", type);
-            session.setAttribute("tell", tell);
-            session.setAttribute("comment", comment);
+            session.setAttribute("data", data);
+
+            //フォーム入力に不備があれば登録画面を表示。初アクセス時にエラーが発生しないよう処理。
+            if (data.checkInvalid() || data.checkTellInvalid(request.getParameter("tell")) || data.checkTellLengthInvalid()) {
+                session.setAttribute("error", true);
+                request.getRequestDispatcher("/insert.jsp").forward(request, response);
+            }
+
             System.out.println("Session updated!!");
-            
+
+            session.setAttribute("ac2", (int) (Math.random() * 1000));
             request.getRequestDispatcher("/insertconfirm.jsp").forward(request, response);
-        }catch(Exception e){
+
+        } catch (Exception e) {
             request.setAttribute("error", e.getMessage());
             request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
-            
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -1,7 +1,9 @@
+<%@page import="jums.UserDataBeans"%>
 <%@page import="jums.JumsHelper"%>
 <%@page import="javax.servlet.http.HttpSession" %>
 <%
     HttpSession hs = request.getSession();
+    UserDataBeans data = (UserDataBeans) hs.getAttribute("data");
 %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -11,13 +13,17 @@
         <title>JUMS登録結果画面</title>
     </head>
     <body>
+        
         <h1>登録結果</h1><br>
-        名前:<%= hs.getAttribute("name")%><br>
-        生年月日:<%= hs.getAttribute("year")+"年"+hs.getAttribute("month")+"月"+hs.getAttribute("day")+"日"%><br>
-        種別:<%= hs.getAttribute("type")%><br>
-        電話番号:<%= hs.getAttribute("tell")%><br>
-        自己紹介:<%= hs.getAttribute("comment")%><br>
+        名前:<%= data.getName()%><br>
+        生年月日:<%= data.getYear() + "年" + data.getMonth() + "月" + data.getDay() + "日"%><br>
+        種別:<%= data.getType()%><br>
+        電話番号:<%= data.getTell()%><br>
+        自己紹介:<%= data.getComment()%><br>
         以上の内容で登録しました。<br>
+        <%
+            hs.invalidate();
+        %>
     </body>
     <%=JumsHelper.getInstance().home()%>
 </html>

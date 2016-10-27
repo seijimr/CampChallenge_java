@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * insertresultと対応するサーブレット
- * フォームから入力された値をセッション経由で受け取り、データベースにinsertする
+ * insertresultと対応するサーブレット フォームから入力された値をセッション経由で受け取り、データベースにinsertする
  * 直接アクセスした場合はerror.jspに振り分け
+ *
  * @author hayashi-s
  */
 public class InsertResult extends HttpServlet {
@@ -28,25 +28,35 @@ public class InsertResult extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         //セッションスタート
         HttpSession session = request.getSession();
-        
-        try{
+
+        try {
+            //不正アクセス対策
+            String accesschk = request.getParameter("ac2");
+            if (accesschk == null || (Integer) session.getAttribute("ac2") != Integer.parseInt(accesschk)) {
+                throw new Exception("不正なアクセスです");
+            }
+            UserDataBeans data = (UserDataBeans) session.getAttribute("data");
+
             //ユーザー情報に対応したJavaBeansオブジェクトに格納していく
             UserDataDTO userdata = new UserDataDTO();
-            userdata.setName((String)session.getAttribute("name"));
+            userdata.setName(data.getName());
             Calendar birthday = Calendar.getInstance();
+            birthday.set(Calendar.YEAR, data.getYear());
+            birthday.set(Calendar.MONTH, data.getMonth());
+            birthday.set(Calendar.DAY_OF_MONTH, data.getDay()-1);
             userdata.setBirthday(birthday.getTime());
-            userdata.setType(Integer.parseInt((String)session.getAttribute("type")));
-            userdata.setTell((String)session.getAttribute("tell"));
-            userdata.setComment((String)session.getAttribute("comment"));
-            
+            userdata.setType(Integer.parseInt(data.getType()));
+            userdata.setTell(data.getTell());
+            userdata.setComment(data.getComment());
+
             //DBへデータの挿入
-            UserDataDAO .getInstance().insert(userdata);
-            
+            UserDataDAO.getInstance().insert(userdata);
+
             request.getRequestDispatcher("/insertresult.jsp").forward(request, response);
-        }catch(Exception e){
+        } catch (Exception e) {
             //データ挿入に失敗したらエラーページにエラー文を渡して表示
             request.setAttribute("error", e.getMessage());
             request.getRequestDispatcher("/error.jsp").forward(request, response);
