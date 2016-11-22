@@ -1,0 +1,30 @@
+#name{
+    visibility:hidden;
+    color:red;
+}
+#tell{
+    visibility:hidden;
+    color:red;
+}
+#birth{
+    visibility:hidden;
+    color:red;
+}
+#tell{
+    visibility:hidden;
+    color:red;
+}
+
+            .form {
+                float: left;
+            }
+/*            クリア　　　　　*/
+            .formcontainer:before,
+            .formcontainer:after {
+                content: "";
+                display: table;
+            }
+
+            .formcontainer:after {
+                clear: both;
+            }
